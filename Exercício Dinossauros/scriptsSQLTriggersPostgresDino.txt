@@ -1,0 +1,106 @@
+/* Criar database dinossauros via pgAdmin e executar os scrips abaixo */
+
+/* Criação da tabela grupo */
+CREATE TABLE grupo
+(
+id_grupo SERIAL PRIMARY KEY,
+nome varchar(100),
+tipo_alimentacao varchar(100)
+);
+
+/* Criação da tabela era */
+CREATE TABLE era
+(
+id_era SERIAL PRIMARY KEY,
+nome varchar(50) not null,
+duracao_inicio_milhoes integer not null,
+duracao_fim_milhoes integer not null
+);
+
+/* Criação da tabela dinossauro */
+CREATE TABLE dinossauro
+(
+id_dinossauro SERIAL PRIMARY KEY,
+nome varchar(100) not null,
+fk_grupo integer not null,
+toneladas integer,
+ano_descoberta integer,
+descobridor varchar(100),
+fk_era integer not null,
+inicio_milhoes integer,
+fim_milhoes integer,
+pais varchar(50),
+FOREIGN KEY (fk_grupo) REFERENCES grupo (id_grupo),
+FOREIGN KEY (fk_era) REFERENCES era (id_era)
+);
+
+/* Inserções na tabela grupo */
+INSERT INTO grupo (nome, tipo_alimentacao) VALUES ('Anquilossauros', 'Herbívoro');
+INSERT INTO grupo (nome, tipo_alimentacao) VALUES ('Ceratopsídeos', 'Herbívoro');
+INSERT INTO grupo (nome, tipo_alimentacao) VALUES ('Estegossauros', 'Herbívoro');
+INSERT INTO grupo (nome, tipo_alimentacao) VALUES ('Terópodes', 'carnívoros ou omnívoros');
+
+/* Inserções na tabela era */
+INSERT INTO era (nome, duracao_inicio_milhoes, duracao_fim_milhoes) VALUES ('Triássico', 251, 200);
+INSERT INTO era (nome, duracao_inicio_milhoes, duracao_fim_milhoes) VALUES ('Jurássico', 200, 145);
+INSERT INTO era (nome, duracao_inicio_milhoes, duracao_fim_milhoes) VALUES ('Cretáceo', 145, 65);
+
+/* Criaçã oda trigger function */
+CREATE OR REPLACE FUNCTION verifica_anos_existencia() RETURNS TRIGGER AS $BODY$
+BEGIN
+IF(NEW.fim_milhoes > NEW.inicio_milhoes)
+THEN 
+	RAISE EXCEPTION 'Inicio dos anos de existêcia não deve ser menor que o fim!';
+ELSE
+	IF((NEW.fim_milhoes >= (SELECT duracao_fim_milhoes from era WHERE NEW.fk_era = era.id_era) AND
+		NEW.fim_milhoes <= NEW.inicio_milhoes AND
+   		NEW.fim_milhoes <= (SELECT duracao_inicio_milhoes from era WHERE NEW.fk_era = era.id_era)) AND
+  	   (NEW.inicio_milhoes <= (SELECT duracao_inicio_milhoes from era WHERE NEW.fk_era = era.id_era) AND
+   		NEW.inicio_milhoes >= NEW.fim_milhoes))
+	THEN 
+	ELSE 
+		RAISE EXCEPTION 'Os valores de anos estão errados ou não condizem com a era informada!';
+
+END IF;
+END IF;
+RETURN NEW;
+END;
+$BODY$
+LANGUAGE PLPGSQL VOLATILE;
+
+/* Criação da Trigger */
+CREATE TRIGGER trigg_verifica_anos AFTER INSERT OR UPDATE ON dinossauro
+FOR EACH ROW EXECUTE PROCEDURE verifica_anos_existencia();
+
+/* Inserções tabela dinossauro */
+
+INSERT INTO dinossauro(
+	nome, fk_grupo, toneladas, ano_descoberta, descobridor, fk_era, inicio_milhoes, fim_milhoes, pais)
+	VALUES ('Saichania', 1, 4, 1977, 'Maryanska', 3, 145, 66, 'Mongólia')
+
+INSERT INTO dinossauro(
+	nome, fk_grupo, toneladas, ano_descoberta, descobridor, fk_era, inicio_milhoes, fim_milhoes, pais)
+	VALUES ('Kentrossauro', 3, 2, 1909, 'Cientistas Alemães', 2, 200, 145, 'Tanzânia');
+
+INSERT INTO dinossauro(
+	nome, fk_grupo, toneladas, ano_descoberta, descobridor, fk_era, inicio_milhoes, fim_milhoes, pais)
+	VALUES ('Tricerátops', 2, 6, 1887, 'John Bell Hatcher', 3, 70, 66, 'Canadá');
+
+/* Insert que disparou a trigger solicitada na questão 6, onde os anos inicio e fim estão fora da era */
+INSERT INTO dinossauro(
+	nome, fk_grupo, toneladas, ano_descoberta, descobridor, fk_era, inicio_milhoes, fim_milhoes, pais)
+	VALUES ('Pinacossauro', 1, 6, 1999, 'Museu Americano de história Natural ', 1, 85, 75, 'China');
+
+INSERT INTO dinossauro(
+	nome, fk_grupo, toneladas, ano_descoberta, descobridor, fk_era, inicio_milhoes, fim_milhoes, pais)
+	VALUES ('Alossauro', 4, 3, 1877, 'Othniel Charles Marsh', 2, 155, 150, 'América do Norte');
+
+/* Trigger que verifica se os anos inicio são menores que o fim */	
+INSERT INTO dinossauro(
+	nome, fk_grupo, toneladas, ano_descoberta, descobridor, fk_era, inicio_milhoes, fim_milhoes, pais)
+	VALUES ('teste', 1, 4, 1977, 'Maryanska', 3, 64, 65, 'Mongólia');
+
+
+
+
+
