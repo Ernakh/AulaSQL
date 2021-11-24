@@ -143,3 +143,83 @@ inner join pais on pais.id = dinossauro.fk_pais
 where grupo.nome in ('Anquilossauros', 'Ceratopsídeos')
 	and dinossauro.ano_descoberta between '1900' and '1999'
 
+
+
+
+
+--1. Faça uma trigger que valide os anos iniciais e finais da existência do dinossauro 
+--inserido ou atualizado. Caso os anos não estejam corretos, cancele a operação e mostre 
+--uma mensagem ao usuário.
+
+create trigger exercicio1
+on dinossauro
+after insert, update
+as 
+begin
+	declare @ini int
+	declare @fim int
+
+	select @ini = (select inserted.inicio from inserted)
+	select @fim = (select inserted.fim	  from inserted)
+
+	if(@fim < @ini)
+	begin
+		PRINT('Dinossauro cadastrado com sucesso!')
+	end
+	else
+	begin
+		ROLLBACK;
+		RAISERROR('Datas inválidas!', 14, 1);
+		return;
+	end
+end
+
+select * from dinossauro
+select * from era
+
+update era set inicio = 300, fim = 200 where nome = 'Jurássico'
+
+insert into dinossauro values ('Giganotossauro2', 1, 2, 6, '1983', 70, 50, 1, 1)
+
+--2. Atualize a trigger anterior, para validar a inserção e alteração do dinossauro, 
+--conforme as eras (verificar se os anos de existência do dinossauro condizem com a era informada), 
+--informando que os valores de anos estão errados ou não condizem com a era informada.
+drop trigger exercicio2
+create trigger exercicio2
+on dinossauro
+after insert, update
+as
+begin
+	declare @dinoIni Int
+	declare @dinoFim Int
+	declare @eraIni Int
+	declare @eraFim Int
+
+	select @dinoIni = (select inserted.inicio from inserted)
+	select @dinoFim = (select inserted.fim from inserted)
+	select @eraIni = (select era.inicio from era inner join inserted on inserted.fk_era = era.id)
+	select @eraFim = (select era.fim from era inner join inserted on inserted.fk_era = era.id)
+
+	if (@dinoIni < @eraIni) and (@dinoFim > @eraFim)
+	begin
+		print('Dinossauro cadastrado!');
+	end
+	else
+	begin
+		rollback;
+		raiserror('Datas do dinosauro não conferem com a Era informada!', 14, 1);
+		return;
+	end
+end
+
+
+insert into dinossauro values ('Giganotossauro3', 1, 2, 6, '1983', 190, 130, 1, 1)
+
+select * from dinossauro
+select * from era
+1 - Cretáceo	200	110
+2 - Jurássico	300	200
+
+
+
+
