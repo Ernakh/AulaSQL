@@ -181,9 +181,44 @@ end
 --2. Atualize a trigger anterior, para validar a inserção e alteração do dinossauro, conforme as eras (verificar se os anos de existência do dinossauro condizem com a era informada), informando que os valores de anos estão errados ou não condizem com a era informada.
 
 
+create trigger validaInsereDinossauroEra
+on DINOSSAUROS
+after insert
+as
+begin
+	declare @dinoIni int
+	declare @dinoFim int
+	declare @eraIni int
+	declare @eraFim int
+
+	select @dinoIni = (select inserted.inicio from inserted)
+	select @dinoFim = (select inserted.fim from inserted)
+	select @eraIni = (select ERAS.inicio from ERAS where ERAS.id_era = (select inserted.fk_era from inserted))
+	select @eraFim = (select ERAS.fim from ERAS where ERAS.id_era = (select inserted.fk_era from inserted))
+	
+	if (@dinoIni > @eraIni) and (@dinoFim < @eraFim)
+	begin
+		insert into log values ('Inserção', 'Novo dinossauro inserido em Dinossauros', GETDATE());
+		print('Dinossauro inseridos com sucesso!')
+	end
+	else
+	begin
+		ROLLBACK;
+		insert into log values ('Inserção', 'tentativa de inserção de novo dinossauro na tabela Dinossauros', GETDATE());
+		RAISERROR('INVALIDO', 14,1);
+		RETURN;
+	end
+end
 
 
-select @inicioD = (select inserted.inicio from inserted)
-select @fimD = (select inserted.fim from inserted)
-select @inicioE = (select era.inicio from era where era.id	= inserted.fk_era)
-select @fimE = (select era.fim from era where era.id	= inserted.fk_era)
+
+--
+
+
+
+
+
+
+
+
+
