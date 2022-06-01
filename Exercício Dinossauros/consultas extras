@@ -56,3 +56,73 @@ select * from dinossauro where YEAR(ano_descoberta) > 1900
 select fk_grupo, avg(toneladas) as Media from dinossauro group by fk_grupo --media por grupo
 
 select fk_grupo, count(*) as Quantidade from dinossauro group by fk_grupo --quantidade por grupo
+
+
+
+
+select * from dinossauro
+
+select nome, toneladas from dinossauro
+
+select
+fk_grupo, sum(toneladas)
+from dinossauro 
+group by fk_grupo
+having sum(toneladas) > 5
+
+select nome, toneladas from dinossauro 
+where toneladas = (select max(toneladas) 
+					from dinossauro)
+
+select * from dinossauro 
+where fk_grupo in (1,4)
+
+--comentario
+select * from dinossauro where 
+fk_grupo between 1 and 4
+
+
+select 
+nome, 
+(CONVERT(varchar(10), toneladas) + ' toneladas')
+from dinossauro 
+where toneladas = (select max(toneladas) 
+					from dinossauro)
+
+select * from dinossauro
+where YEAR(ano_descoberta) > 1900
+
+select fk_grupo, avg(toneladas) as Media
+from dinossauro
+group by fk_grupo
+
+
+select fk_grupo, count(*) as quantidade
+from dinossauro
+group by fk_grupo
+
+select dinossauro.nome 
+from dinossauro, grupo
+
+select dinossauro.nome 
+from dinossauro, grupo
+group by dinossauro.nome 
+
+select distinct  dinossauro.nome 
+from dinossauro, grupo
+
+
+select dinossauro.nome as dinossauro, 
+	   grupo.nome as grupo
+from dinossauro, grupo
+where dinossauro.fk_grupo = grupo.id
+
+select 
+	*,
+	(select count(*) from dinossauro
+		where dinossauro.fk_grupo = grupo.id
+	) as quantidade
+from grupo
+
+select * from dinossauro
+
