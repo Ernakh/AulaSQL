@@ -1,0 +1,58 @@
+select * from dinossauro
+
+select nome, toneladas from dinossauro
+
+select
+nome as Dinossauro, toneladas
+from dinossauro
+where toneladas > 4
+and (nome = 'Anquilossauro'
+or nome = 'Torossauro')
+order by nome desc
+
+select
+nome as Dinossauro, toneladas
+from dinossauro
+where toneladas > 4
+and (nome = 'Anquilossauro'
+or nome = 'Saichania')
+order by nome desc
+
+select
+nome as Dinossauro, toneladas
+from dinossauro
+where toneladas > 4
+and nome like '%ssauro'
+order by nome desc
+
+select
+count(*)
+from dinossauro
+where fk_grupo = 1
+
+select
+sum(toneladas)
+from dinossauro
+where fk_grupo = 1
+
+select
+fk_grupo, sum(toneladas)
+from dinossauro
+group by fk_grupo
+having sum(toneladas) > 5
+
+select nome, toneladas from dinossauro
+where toneladas = (select max(toneladas) from dinossauro)
+
+select * from dinossauro where fk_grupo in (1,4) --lista grupos 1 e 4 (in == = com mais valores)
+
+select * from dinossauro where fk_grupo between 1 and 4 --lista grupos entre 1 e 4
+
+select nome, (convert(varchar(10), toneladas) + ' toneladas') as Toneladas from dinossauro
+where toneladas = (select max(toneladas) from dinossauro)
+
+select * from dinossauro where YEAR(ano_descoberta) > 1900
+
+select fk_grupo, avg(toneladas) as Media from dinossauro group by fk_grupo --media por grupo
+
+select fk_grupo, count(*) as Quantidade from dinossauro group by fk_grupo --quantidade por grupo
