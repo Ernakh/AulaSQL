@@ -126,3 +126,43 @@ from grupo
 
 select * from dinossauro
 
+
+
+select nome, (select count(*) from dinossauro where dinossauro.fk_grupo = grupo.id) as Quantidade from grupo --retorna nome do grupo com quantidade de dinossauros
+
+select * from descobridor
+
+select dinossauro.nome as Dinossauro, descobridor.nome as Descobridor from dinossauro, descobridor where dinossauro.fk_descobridor = descobridor.id
+
+select dinossauro.nome as Dinossauro, grupo.nome as Grupo, descobridor.nome as Descobridor, pais.nome as Pais, era.nome as ERA from dinossauro, grupo, descobridor, pais, era where
+dinossauro.fk_grupo = grupo.id and
+dinossauro.fk_descobridor = descobridor.id and
+dinossauro.fk_pais = pais.id and
+dinossauro.fk_era = era.id;
+
+--7
+select * from dinossauro order by 2
+
+--8
+select * from dinossauro order by (select nome from descobridor where dinossauro.fk_descobridor = descobridor.id)
+
+--9
+select * from dinossauro, grupo where grupo.nome = 'Anquilossauros' and dinossauro.fk_grupo = grupo.id order by YEAR(ano_descoberta)
+
+--10
+select * from dinossauro, grupo where (grupo.nome ='Anquilossauros' or grupo.nome ='Ceratopsídeos') and dinossauro.fk_grupo = grupo.id and YEAR(ano_descoberta) between 1900 and 1999
+
+--11
+select era.nome, SUM(toneladas) as 'SOMA TONELADAS', MAX(toneladas) as 'PESO MAXIMO', MIN(toneladas) as 'PESO MINIMO', AVG(toneladas) as 'MEDIA PESO'
+from era, dinossauro where dinossauro.fk_era = era.id group by era.nome
+
+--12
+select pais.nome, COUNT(*) as Quantidade from pais, dinossauro where dinossauro.fk_pais = pais.id group by pais.nome
+
+--13
+select nome, (inicio-fim) as viveu from dinossauro where (inicio-fim) > 50
+
+--14
+select dinossauro.nome, ano_descoberta from dinossauro where (YEAR(getdate()) - YEAR(ano_descoberta)) > 100
+
+
