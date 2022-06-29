@@ -1,0 +1,9 @@
+Elaborar o Script de criação do BD Locadora com todas suas tabelas, atributos, PKs, FKs e com no mínimo 10 inserts em cada tabela (20 nas associativas).
+Elabore as seguintes consultas:
+- Que mostre todos os clientes que locaram filmes com valor maior ou igual ao valor da categoria com maior valor.
+- Que mostre a lista de gêneros, juntamente com o último filme locado de cada gênero.
+- Que traga os filmes locados em um determinado período.
+- Que mostre todos os filmes já locados e a quantidade de vezes que cada um foi locado.
+- Que mostre os 2 filmes mais locados no ano de 2022.
+- Que mostre o Gênero mais locado.
+- Que conte os clientes por estados.
